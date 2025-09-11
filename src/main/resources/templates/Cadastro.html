@@ -11,11 +11,7 @@
 <div class="row justify-content-center">
     <div class="col-md-6">
         <h2 class="text-center mb-4">Cadastro</h2>
-        <!-- Exibir mensagem de erro inline, se houver -->
-        <div th:if="${error != null}" class="alert alert-danger" role="alert">
-            <span th:text="${error}"></span>
-        </div>
-        <form th:action="@{/cadastro}" method="post">
+        <form id="cadastroForm">
             <div class="mb-3">
                 <label for="nome" class="form-label">Nome</label>
                 <input type="text" class="form-control" id="nome" name="nome" required>
@@ -68,8 +64,8 @@
                 <h5 class="modal-title" id="errorModalLabel">Erro no Cadastro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <span th:text="${error != null} ? ${error} : 'Erro ao cadastrar usuário'"></span>
+            <div class="modal-body" id="errorMessage">
+                Erro ao cadastrar usuário
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
@@ -90,25 +86,57 @@
                 Cadastro realizado com sucesso!
             </div>
             <div class="modal-footer">
-                <a th:href="@{/menu}" class="btn btn-primary">Ir para o Menu</a>
+                <a href="/menu" class="btn btn-primary">Ir para o Menu</a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS and script to show modals -->
+<!-- Bootstrap JS and script to handle form submission -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    if ([[${error}]] != null) {
-        var errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
-        errorModal.show();
-    }
-    if ([[${success}]] != null) {
-        var successModal = new bootstrap.Modal(document.getElementById('successModal'));
-        successModal.show();
-    }
-    /*]]>*/
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('cadastroForm');
+        form.addEventListener('submit', async function (event) {
+            event.preventDefault(); // Impede o comportamento padrão do formulário
+
+            const formData = new FormData(form);
+            const usuario = {
+                nome: formData.get('nome'),
+                sobrenome: formData.get('sobrenome'),
+                email: formData.get('email'),
+                senha: formData.get('senha'),
+                idade: parseInt(formData.get('idade')),
+                sexo: formData.get('sexo'),
+                altura: parseFloat(formData.get('altura')),
+                peso: parseFloat(formData.get('peso'))
+            };
+
+            try {
+                const response = await fetch('/api/usuarios', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(usuario)
+                });
+
+                if (response.ok) {
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'), { keyboard: false });
+                    successModal.show();
+                } else {
+                    const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { keyboard: false });
+                    const errorMessage = document.getElementById('errorMessage');
+                    errorMessage.textContent = response.status === 400 ? 'Email já cadastrado' : 'Erro ao cadastrar usuário';
+                    errorModal.show();
+                }
+            } catch (error) {
+                const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { keyboard: false });
+                document.getElementById('errorMessage').textContent = 'Erro ao conectar com o servidor';
+                errorModal.show();
+            }
+        });
+    });
 </script>
 </body>
 </html>

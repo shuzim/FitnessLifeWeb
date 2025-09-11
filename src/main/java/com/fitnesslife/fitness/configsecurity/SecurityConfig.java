@@ -26,22 +26,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") // Desabilita CSRF apenas para endpoints da API
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/cadastro", "/api/usuarios/**").permitAll()
+                        .requestMatchers("/login", "/cadastro", "/api/usuarios/**", "/api/login").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/login")
-                        .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/menu", true)
-                        .failureUrl("/login?error=Credenciais inválidas")
-                        .permitAll()
-                )
+                .formLogin(form -> form.disable()) // 🔴 Desabilita o formLogin padrão do Spring Security
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")
                         .permitAll()
                 );
+
         return http.build();
     }
 
