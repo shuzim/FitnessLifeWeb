@@ -1,0 +1,69 @@
+-- Tabela: usuarios
+CREATE TABLE usuarios (
+    id BIGSERIAL PRIMARY KEY,
+    nome VARCHAR(50) NOT NULL,
+    sobrenome VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    senha VARCHAR(255) NOT NULL, -- Armazena senha hasheada (ex.: BCrypt)
+    idade INTEGER NOT NULL,
+    sexo VARCHAR(20) NOT NULL, -- Valores: 'masculino', 'feminino', 'outro'
+    altura DOUBLE PRECISION NOT NULL, -- Em cm
+    peso DOUBLE PRECISION NOT NULL, -- Em kg
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tabela: perfil_nutricional
+-- Armazena metas nutricionais do usuário
+CREATE TABLE perfil_nutricional (
+    id BIGSERIAL PRIMARY KEY,
+    id_usuario BIGINT NOT NULL,
+    calorias_diarias INTEGER, -- Calorias diárias recomendadas
+    proteinas_gramas DOUBLE PRECISION, -- Proteínas em gramas
+    carboidratos_gramas DOUBLE PRECISION, -- Carboidratos em gramas
+    gorduras_gramas DOUBLE PRECISION, -- Gorduras em gramas
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabela: plano_refeicao
+-- Armazena planos de refeição associados a um usuário
+CREATE TABLE plano_refeicao (
+    id BIGSERIAL PRIMARY KEY,
+    id_usuario BIGINT NOT NULL,
+    nome_refeicao VARCHAR(100) NOT NULL, -- Ex.: "Café da Manhã", "Almoço"
+    descricao TEXT, -- Descrição do plano (ex.: alimentos incluídos)
+    data DATE NOT NULL, -- Data do plano
+    calorias_total INTEGER, -- Calorias totais do plano
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabela: progresso_dieta
+-- Registra o progresso do usuário (ex.: peso ao longo do tempo)
+CREATE TABLE progresso_dieta (
+    id BIGSERIAL PRIMARY KEY,
+    id_usuario BIGINT NOT NULL,
+    peso DOUBLE PRECISION NOT NULL, -- Peso registrado em kg
+    data_registro DATE NOT NULL,
+    observacoes TEXT, -- Comentários adicionais
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_usuario FOREIGN KEY (id_usuario) REFERENCES usuarios(id) ON DELETE CASCADE
+);
+
+-- Tabela: receitas_saudaveis
+-- Armazena receitas saudáveis disponíveis no sistema
+CREATE TABLE receitas_saudaveis (
+    id BIGSERIAL PRIMARY KEY,
+    nome_receita VARCHAR(100) NOT NULL,
+    ingredientes TEXT NOT NULL, -- Lista de ingredientes
+    instrucoes TEXT NOT NULL, -- Instruções de preparo
+    calorias INTEGER, -- Calorias por porção
+    tempo_preparo INTEGER, -- Em minutos
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Índices para otimizar consultas
+CREATE INDEX idx_usuario_email ON usuarios(email);
+CREATE INDEX idx_perfil_nutricional_usuario ON perfil_nutricional(id_usuario);
+CREATE INDEX idx_plano_refeicao_usuario ON plano_refeicao(id_usuario);
+CREATE INDEX idx_progresso_dieta_usuario ON progresso_dieta(id_usuario);
