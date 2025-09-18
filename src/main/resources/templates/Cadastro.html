@@ -3,56 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cadastro</title>
-    <!-- Bootstrap CSS for responsiveness -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Cadastro - FitnessLife</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+        .form-label {
+            color: #007bff;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #007bff, #00c4ff);
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #0056b3, #0096cc);
+        }
+        .btn-secondary {
+            background: #6c757d;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .modal-content {
+            border-radius: 15px;
+        }
+        .modal-header.error {
+            background: #dc3545;
+            color: white;
+        }
+        .modal-header.success {
+            background: #28a745;
+            color: white;
+        }
+        .modal-title {
+            font-weight: 600;
+        }
+        footer {
+            background: #343a40;
+            color: white;
+            padding: 1rem 0;
+            margin-top: auto;
+        }
+    </style>
 </head>
-<body class="container mt-5">
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2 class="text-center mb-4">Cadastro</h2>
-        <form id="cadastroForm">
-            <div class="mb-3">
-                <label for="nome" class="form-label">Nome</label>
-                <input type="text" class="form-control" id="nome" name="nome" required>
+<body>
+<!-- Main Content -->
+<div class="container mt-5 pt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <h2 class="text-center mb-4"><i class="bi bi-person-plus-fill me-2"></i>Cadastro</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form id="cadastroForm">
+                        <div class="mb-3">
+                            <label for="nome" class="form-label"><i class="bi bi-person-fill me-2"></i>Nome</label>
+                            <input type="text" class="form-control" id="nome" name="nome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sobrenome" class="form-label"><i class="bi bi-person-fill me-2"></i>Sobrenome</label>
+                            <input type="text" class="form-control" id="sobrenome" name="sobrenome" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label"><i class="bi bi-envelope-fill me-2"></i>Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="senha" class="form-label"><i class="bi bi-key-fill me-2"></i>Senha</label>
+                            <input type="password" class="form-control" id="senha" name="senha" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="idade" class="form-label"><i class="bi bi-calendar-fill me-2"></i>Idade</label>
+                            <input type="number" class="form-control" id="idade" name="idade" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sexo" class="form-label"><i class="bi bi-gender-ambiguous me-2"></i>Sexo</label>
+                            <select class="form-select" id="sexo" name="sexo" required>
+                                <option value="">Selecione</option>
+                                <option value="masculino">Masculino</option>
+                                <option value="feminino">Feminino</option>
+                                <option value="outro">Outro</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="altura" class="form-label"><i class="bi bi-rulers me-2"></i>Altura (cm)</label>
+                            <input type="number" step="0.1" class="form-control" id="altura" name="altura" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="peso" class="form-label"><i class="bi bi-person-fill me-2"></i>Peso (kg)</label>
+                            <input type="number" step="0.1" class="form-control" id="peso" name="peso" required>
+                        </div>
+                        <div class="d-flex justify-content-center">
+                            <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle-fill me-2"></i>Finalizar Cadastro</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="mb-3">
-                <label for="sobrenome" class="form-label">Sobrenome</label>
-                <input type="text" class="form-control" id="sobrenome" name="sobrenome" required>
-            </div>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
-            </div>
-            <div class="mb-3">
-                <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senha" name="senha" required>
-            </div>
-            <div class="mb-3">
-                <label for="idade" class="form-label">Idade</label>
-                <input type="number" class="form-control" id="idade" name="idade" required>
-            </div>
-            <div class="mb-3">
-                <label for="sexo" class="form-label">Sexo</label>
-                <select class="form-select" id="sexo" name="sexo" required>
-                    <option value="">Selecione</option>
-                    <option value="masculino">Masculino</option>
-                    <option value="feminino">Feminino</option>
-                    <option value="outro">Outro</option>
-                </select>
-            </div>
-            <div class="mb-3">
-                <label for="altura" class="form-label">Altura (cm)</label>
-                <input type="number" step="0.1" class="form-control" id="altura" name="altura" required>
-            </div>
-            <div class="mb-3">
-                <label for="peso" class="form-label">Peso (kg)</label>
-                <input type="number" step="0.1" class="form-control" id="peso" name="peso" required>
-            </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-primary">Finalizar Cadastro</button>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
@@ -60,8 +125,8 @@
 <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="errorModalLabel">Erro no Cadastro</h5>
+            <div class="modal-header error">
+                <h5 class="modal-title" id="errorModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Erro no Cadastro</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body" id="errorMessage">
@@ -78,27 +143,34 @@
 <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="successModalLabel">Cadastro Concluído</h5>
+            <div class="modal-header success">
+                <h5 class="modal-title" id="successModalLabel"><i class="bi bi-check-circle-fill me-2"></i>Cadastro Concluído</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 Cadastro realizado com sucesso!
             </div>
             <div class="modal-footer">
-                <a href="/menu" class="btn btn-primary">Ir para o Menu</a>
+                <a href="/login" class="btn btn-primary"><i class="bi bi-box-arrow-in-right me-2"></i>Ir para o Login</a>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS and script to handle form submission -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Footer -->
+<footer class="text-center">
+    <div class="container">
+        <p class="mb-0">&copy; 2025 FitnessLife. Todos os direitos reservados.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('cadastroForm');
         form.addEventListener('submit', async function (event) {
-            event.preventDefault(); // Impede o comportamento padrão do formulário
+            event.preventDefault();
+            console.log('Formulário de cadastro submetido');
 
             const formData = new FormData(form);
             const usuario = {
@@ -111,6 +183,7 @@
                 altura: parseFloat(formData.get('altura')),
                 peso: parseFloat(formData.get('peso'))
             };
+            console.log('Dados enviados para /api/usuarios:', usuario);
 
             try {
                 const response = await fetch('/api/usuarios', {
@@ -120,17 +193,21 @@
                     },
                     body: JSON.stringify(usuario)
                 });
+                console.log('Resposta do servidor:', response.status, response.statusText);
 
                 if (response.ok) {
+                    console.log('Cadastro bem-sucedido, exibindo modal de sucesso');
                     const successModal = new bootstrap.Modal(document.getElementById('successModal'), { keyboard: false });
                     successModal.show();
                 } else {
+                    console.log('Erro no cadastro, status:', response.status);
                     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { keyboard: false });
                     const errorMessage = document.getElementById('errorMessage');
                     errorMessage.textContent = response.status === 400 ? 'Email já cadastrado' : 'Erro ao cadastrar usuário';
                     errorModal.show();
                 }
             } catch (error) {
+                console.error('Erro na requisição:', error);
                 const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { keyboard: false });
                 document.getElementById('errorMessage').textContent = 'Erro ao conectar com o servidor';
                 errorModal.show();
