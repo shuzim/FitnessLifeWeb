@@ -47,6 +47,7 @@ public class ApiController {
     public ResponseEntity<List<Usuario>> listarUsuarios() {
         logger.info("Listando todos os usuários");
         List<Usuario> usuarios = usuarioRepository.findAll();
+
         return ResponseEntity.ok(usuarios);
     }
 
@@ -81,7 +82,7 @@ public class ApiController {
             SecurityContext context = SecurityContextHolder.createEmptyContext();
             context.setAuthentication(authToken);
 
-            // 🔥 Garante que o SecurityContext vai para a sessão HTTP
+            // Garante que o SecurityContext vai para a sessão HTTP
             HttpSession session = request.getSession(true);
             session.setAttribute("SPRING_SECURITY_CONTEXT", context);
 
@@ -90,6 +91,15 @@ public class ApiController {
             logger.warn("Credenciais inválidas para email: {}", loginRequest.getEmail());
             return ResponseEntity.status(401).body("Credenciais inválidas");
         }
+    }
+
+
+    @PostMapping("/debug")
+    public String debugKeys() {
+        String googleKey = System.getenv("GOOGLE_API_KEY");
+        String geminiKey = System.getenv("GEMINI_API_KEY");
+        return "teste" +"GOOGLE_API_KEY=" + googleKey + " | GEMINI_API_KEY=" + geminiKey;
+
     }
 
 

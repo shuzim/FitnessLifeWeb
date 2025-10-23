@@ -18,6 +18,8 @@ public class Usuario {
     private String sexo;
     private Double altura; // Em cm
     private Double peso; // Em kg
+    private String cpf;
+    private String telefone;
 
     // Construtor vazio
     public Usuario() {}

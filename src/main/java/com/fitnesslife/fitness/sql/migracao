@@ -67,3 +67,15 @@ CREATE INDEX idx_usuario_email ON usuarios(email);
 CREATE INDEX idx_perfil_nutricional_usuario ON perfil_nutricional(id_usuario);
 CREATE INDEX idx_plano_refeicao_usuario ON plano_refeicao(id_usuario);
 CREATE INDEX idx_progresso_dieta_usuario ON progresso_dieta(id_usuario);
+
+-- parte do relogio
+CREATE TABLE relogio_data (
+    id BIGSERIAL PRIMARY KEY,
+    usuario_local_id BIGINT NOT NULL,
+    device_id VARCHAR(255),
+    passos INTEGER DEFAULT 0,
+    batimentos INTEGER DEFAULT 0,
+    data_hora TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT fk_relogio_data_usuario FOREIGN KEY (usuario_local_id) REFERENCES usuario(id)
+);
+

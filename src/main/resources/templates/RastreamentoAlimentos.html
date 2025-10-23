@@ -1,12 +1,131 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>RastreamentoAlimentos</title>
+    <meta charset="UTF-8">
+    <title>Rastreamento de Saúde</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f5f8fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #0078d7;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        main {
+            max-width: 900px;
+            margin: 2rem auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            border-bottom: 2px solid #0078d7;
+            padding-bottom: 5px;
+        }
+
+        .info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .card {
+            flex: 1 1 250px;
+            background: #f0f4f8;
+            padding: 1rem;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .card h3 {
+            margin: 0;
+            color: #0078d7;
+        }
+
+        .card p {
+            font-size: 1.5em;
+            margin: 0.5rem 0 0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: #777;
+        }
+    </style>
 </head>
 <body>
-<h1>Como ira ficar aqui</h1>
-<p>aqui ira ficar a parte que irei ligar com os relogios digitais para pegar como a pessoa esta no dia a dia</p>
-<p>irei puxar dados da api e sera comop um deshboard falando sobre o estado da pessoa em tempo real</p>
+<header>
+    <h1>Rastreamento de Saúde em Tempo Real</h1>
+    <p>Monitoramento direto do relógio digital (Samsung Health)</p>
+</header>
 
+<main>
+    <h2>Dados Atuais do Usuário</h2>
+    <div id="userInfo">
+        <p><strong>Usuário:</strong> <span id="userName">Carregando...</span></p>
+        <p><strong>ID:</strong> <span id="userId">Carregando...</span></p>
+    </div>
+
+    <div class="info">
+        <div class="card">
+            <h3>Batimentos Cardíacos</h3>
+            <p id="heartRate">-- bpm</p>
+        </div>
+        <div class="card">
+            <h3>Passos do Dia</h3>
+            <p id="steps">--</p>
+        </div>
+        <div class="card">
+            <h3>Calorias Gastas</h3>
+            <p id="calories">-- kcal</p>
+        </div>
+        <div class="card">
+            <h3>Nível de Estresse</h3>
+            <p id="stress">--</p>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <p>Atualizado automaticamente a cada 10 segundos</p>
+</footer>
+
+<script>
+    const userId = "USER123"; // Você pode pegar do backend ou login
+    const userName = "Matheus Ferreira"; // Simulado
+
+    document.getElementById("userId").textContent = userId;
+    document.getElementById("userName").textContent = userName;
+
+    // Função para buscar dados (substituir pela API real da Samsung)
+    async function atualizarDados() {
+        try {
+            // Exemplo de API simulada
+            // Substitua esta URL pela sua API no backend (ex: /api/samsung/healthdata)
+            const response = await fetch("https://mocki.io/v1/60f8d9e2-d0dc-4f28-9346-53e3f4b4cfe0");
+            const data = await response.json();
+
+            document.getElementById("heartRate").textContent = `${data.heartRate} bpm`;
+            document.getElementById("steps").textContent = data.steps;
+            document.getElementById("calories").textContent = `${data.calories} kcal`;
+            document.getElementById("stress").textContent = data.stress;
+        } catch (error) {
+            console.error("Erro ao atualizar dados:", error);
+        }
+    }
+    atualizarDados();
+    setInterval(atualizarDados, 10000);
+</script>
 </body>
 </html>

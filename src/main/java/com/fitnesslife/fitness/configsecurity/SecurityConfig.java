@@ -30,10 +30,10 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/api/**") // Desabilita CSRF apenas para endpoints da API
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/cadastro", "/api/usuarios/**", "/api/login").permitAll()
+                        .requestMatchers("/login", "/cadastro", "/api/usuarios/**", "/api/login", "api/gemini").permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.disable()) // 🔴 Desabilita o formLogin padrão do Spring Security
+                .formLogin(form -> form.disable()) //  Desabilita o formLogin padrão do Spring Security
                 .logout(logout -> logout
                         .logoutUrl("/logout")
                         .logoutSuccessUrl("/login?logout")

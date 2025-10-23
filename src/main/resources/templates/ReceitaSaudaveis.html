@@ -1,11 +1,102 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-    <title>ReceitasSaudaveis</title>
+    <meta charset="UTF-8">
+    <title>Receitas Saudáveis Personalizadas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f6f9fc;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #2b6cb0;
+        }
+
+        #resposta {
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            white-space: pre-wrap;
+        }
+
+        button {
+            background-color: #2b6cb0;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #2c5282;
+        }
+    </style>
 </head>
 <body>
-<h1>como ira funcionar</h1>
-<p>aqui ira ter etapas com o foco da pessoas e ira ficar com receitas dispobilizadas na internet</p>
-<p>exemplo se a pessoa  quer imagrecer ira ficar com uma etapa com um sequencia de 5 receita para cada aliemtnação do dia</p>
+<h1>Receitas Saudáveis Personalizadas 🍎</h1>
+<p>Ao clicar abaixo, será gerada uma recomendação personalizada com base em seus dados cadastrados.</p>
+
+<button id="btnGerar">Gerar Receitas Personalizadas</button>
+
+<div id="resposta"></div>
+
+<script>
+    async function buscarUsuario() {
+        const resp = await fetch("/api/usuarios");
+        if (!resp.ok) {
+            throw new Error("Erro ao buscar dados do usuário");
+        }
+        const data = await resp.json();
+        // Se for lista, pega o primeiro usuário
+        return Array.isArray(data) ? data[0] : data;
+    }
+
+    async function gerarReceita() {
+        const respostaDiv = document.getElementById("resposta");
+        respostaDiv.innerHTML = "🔄 Gerando sua recomendação personalizada...";
+
+        try {
+            const usuario = await buscarUsuario();
+
+            const pergunta = `
+Crie um plano alimentar saudável personalizado baseado nas seguintes informações:
+- Idade: ${usuario.idade}
+- Sexo: ${usuario.sexo}
+- Altura: ${usuario.altura}m
+- Peso: ${usuario.peso}kg
+
+Monte 5 receitas diárias (café da manhã, almoço, lanche, jantar e ceia),
+diga se o peso e altura estão adequados e recomende melhorias saudáveis.
+`;
+
+            const resp = await fetch("/api/gemini/respostas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pergunta })
+            });
+
+            if (!resp.ok) {
+                throw new Error("Erro ao gerar resposta da IA");
+            }
+
+            const respostaTexto = await resp.text();
+            respostaDiv.innerHTML = `<h3>🧠 Recomendações Personalizadas:</h3><p>${respostaTexto}</p>`;
+
+        } catch (err) {
+            respostaDiv.innerHTML = `<span style="color:red;">❌ ${err.message}</span>`;
+            console.error(err);
+        }
+    }
+
+    document.getElementById("btnGerar").addEventListener("click", gerarReceita);
+</script>
 </body>
 </html>
