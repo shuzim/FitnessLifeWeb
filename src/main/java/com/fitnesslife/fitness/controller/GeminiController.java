@@ -18,7 +18,7 @@ public class GeminiController {
     public String GeminiRespose(@RequestBody Map<String, String> body) {
         String pergunta = body.get("pergunta");
 
-        System.setProperty("GEMINI_API_KEY", "AIzaSyCSOCMD-wiWnBCbg1glwD2wNlyDq4ozBro");
+        System.setProperty("GEMINI_API_KEY", "AIzaSyCwNqJ4Ns9kpoYJeC4a-A197ukogAWGjHc");
 
         Client client = new Client();
 
