@@ -1,4 +1,4 @@
-/*
+
 package com.fitnesslife.fitness.controller;
 
 import com.google.api.client.util.Value;
@@ -29,4 +29,3 @@ public class GeminiController {
     }
 
 }
-*/
