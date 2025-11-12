@@ -30,6 +30,7 @@ public class ApiController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+
     @PostMapping("/usuarios")
     public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
         logger.info("Tentando criar usuário com email: {}", usuario.getEmail());
@@ -120,4 +121,8 @@ public class ApiController {
             this.senha = senha;
         }
     }
+
+
 }
+
+
