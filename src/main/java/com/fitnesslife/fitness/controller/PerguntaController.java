@@ -7,29 +7,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/api")
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
 public class PerguntaController {
 
-    private static final Logger logger = LoggerFactory.getLogger(PerguntaController.class);
-    private final PerguntaRepository perguntaRepository;
-
-    public PerguntaController(PerguntaRepository perguntaRepository) {
-        this.perguntaRepository = perguntaRepository;
+    @GetMapping("/perguntas")
+    public String carregarPerguntas() {
+        return "perguntas"; // carrega perguntas.html
     }
 
-    @PostMapping("/perguntas")
-    public ResponseEntity<Pergunta> criarPergunta(@RequestBody Pergunta pergunta) {
-        logger.info("Recebendo preferências alimentares do usuário.");
+    private String gostaFrutas;
+    private String gostaVerduras;
 
-        if (pergunta.getGostaFrutas() == null || pergunta.getGostaVerduras() == null) {
-            logger.warn("Campos obrigatórios ausentes nas respostas do usuário.");
-            return ResponseEntity.badRequest().body(null);
-        }
+    public String getGostaFrutas() { return gostaFrutas; }
+    public void setGostaFrutas(String gostaFrutas) { this.gostaFrutas = gostaFrutas; }
 
-        Pergunta novaPergunta = perguntaRepository.save(pergunta);
-        novaPergunta.setMensagemIA("Respostas recebidas! A IA vai gerar uma receita personalizada.");
-        logger.info("Respostas salvas com sucesso.");
-        return ResponseEntity.ok(novaPergunta);
-    }
+    public String getGostaVerduras() { return gostaVerduras; }
+    public void setGostaVerduras(String gostaVerduras) { this.gostaVerduras = gostaVerduras; }
 }

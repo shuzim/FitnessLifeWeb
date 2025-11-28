@@ -16,6 +16,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -122,7 +123,25 @@ public class ApiController {
         }
     }
 
+    @PostMapping("/perguntas")
+    public ResponseEntity<?> salvarPerguntas(@RequestBody PerguntaController perguntas) {
+        logger.info("Recebendo respostas de preferências alimentares");
 
+        // Validação simples
+        if (perguntas.getGostaFrutas() == null || perguntas.getGostaVerduras() == null) {
+            logger.warn("Campos obrigatórios ausentes");
+            return ResponseEntity.badRequest().body(
+                    Map.of("mensagem", "Preencha todas as perguntas obrigatórias.")
+            );
+        }
+
+        // Aqui você pode armazenar no banco, associar ao usuário, enviar para IA, etc.
+        logger.info("Dados recebidos: {}", perguntas);
+
+        return ResponseEntity.ok(
+                Map.of("mensagem", "Respostas recebidas com sucesso! Obrigado por preencher.")
+        );
+    }
 }
 
 

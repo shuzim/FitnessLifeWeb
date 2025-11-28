@@ -27,6 +27,4 @@ public class Pergunta {
 
     public void setMensagemIA(String s) {
     }
-
-    // getters e setters
 }

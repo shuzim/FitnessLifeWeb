@@ -146,45 +146,75 @@
   </div>
 </div>
 
-<script>
-  document.getElementById("perguntasForm").addEventListener("submit", async function(event) {
-      event.preventDefault();
+  <script>
+document.getElementById("perguntasForm").addEventListener("submit", async function(event) {
+    event.preventDefault();
 
-      const form = event.target;
-      const formData = {
-          gostaFrutas: form.gostaFrutas.value,
-          frutasNaoAgrada: form.frutasNaoAgrada.value,
-          gostaVerduras: form.gostaVerduras.value,
-          verdurasNaoAgrada: form.verdurasNaoAgrada.value,
-          alergias: form.alergias.value
-      };
+    const form = event.target;
 
-      document.getElementById("respostaIA").style.display = "block";
-      document.getElementById("respostaIA").innerHTML =
-          `<div class='alert alert-info'>Enviando respostas para o servidor...</div>`;
+    const gostaFrutas = form.gostaFrutas.value;
+    const frutasNaoAgrada = form.frutasNaoAgrada.value.trim();
 
-      try {
-          // envia JSON para o endpoint no estilo do criarUsuario
-          const response = await fetch("/api/perguntas", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(formData)
-          });
+    const gostaVerduras = form.gostaVerduras.value;
+    const verdurasNaoAgrada = form.verdurasNaoAgrada.value.trim();
 
-          if (!response.ok) {
-              throw new Error("Erro ao enviar dados");
-          }
+    const alergias = form.alergias.value.trim();
 
-          const data = await response.json();
-          document.getElementById("respostaIA").innerHTML =
-              `<div class='alert alert-success'><strong>IA:</strong> ${data.mensagem || "Respostas recebidas!"}</div>`;
-          document.getElementById("botaoProximo").style.display = "block";
-      } catch (error) {
-          document.getElementById("respostaIA").innerHTML =
-              `<div class='alert alert-danger'>Erro ao processar suas respostas.</div>`;
-          console.error(error);
-      }
-  });
+    // ---- VALIDAÇÕES OBRIGATÓRIAS ----
+
+    // 1. Se usuário NÃO gosta de frutas → tem que escrever quais
+    if (gostaFrutas === "Não" && frutasNaoAgrada === "") {
+        alert("Por favor, informe quais frutas você não gosta.");
+        return;
+    }
+
+    // 2. Se usuário NÃO gosta de verduras → tem que escrever quais
+    if (gostaVerduras === "Não" && verdurasNaoAgrada === "") {
+        alert("Por favor, informe quais verduras você não gosta.");
+        return;
+    }
+
+    // 3. Alergias pode ser vazio, mas se não for → precisa ter texto válido
+    if (alergias.length > 0 && alergias.length < 2) {
+        alert("Por favor, descreva melhor suas alergias.");
+        return;
+    }
+
+    // ---- Envio ao servidor ----
+    const formData = {
+        gostaFrutas,
+        frutasNaoAgrada,
+        gostaVerduras,
+        verdurasNaoAgrada,
+        alergias
+    };
+
+    document.getElementById("respostaIA").style.display = "block";
+    document.getElementById("respostaIA").innerHTML =
+        `<div class='alert alert-info'>Enviando respostas para o servidor...</div>`;
+
+    try {
+        const response = await fetch("/api/perguntas", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) {
+            throw new Error("Erro ao enviar dados");
+        }
+
+        const data = await response.json();
+        document.getElementById("respostaIA").innerHTML =
+            `<div class='alert alert-success'><strong>IA:</strong> ${data.mensagem || "Respostas recebidas!"}</div>`;
+        document.getElementById("botaoProximo").style.display = "block";
+
+    } catch (error) {
+        document.getElementById("respostaIA").innerHTML =
+            `<div class='alert alert-danger'>Erro ao processar suas respostas.</div>`;
+        console.error(error);
+    }
+});
 </script>
 </body>
 </html>

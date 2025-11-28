@@ -140,7 +140,7 @@
 
                 if (response.ok) {
                     console.log('Login bem-sucedido, redirecionando para /menu');
-                    window.location.href = '/menu';
+                    window.location.href = '/menu?email=' + encodeURIComponent(loginData.email);
                 } else {
                     console.log('Erro no login, status:', response.status);
                     const errorModal = new bootstrap.Modal(document.getElementById('errorModal'), { keyboard: false });
