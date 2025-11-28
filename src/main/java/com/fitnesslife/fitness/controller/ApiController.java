@@ -1,6 +1,8 @@
 package com.fitnesslife.fitness.controller;
 
+import com.fitnesslife.fitness.model.Pergunta;
 import com.fitnesslife.fitness.model.Usuario;
+import com.fitnesslife.fitness.repository.PerguntaRepository;
 import com.fitnesslife.fitness.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -31,6 +33,8 @@ public class ApiController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private PerguntaRepository perguntaRepository;
 
     @PostMapping("/usuarios")
     public ResponseEntity<Usuario> criarUsuario(@RequestBody Usuario usuario) {
@@ -123,25 +127,33 @@ public class ApiController {
         }
     }
 
-    @PostMapping("/perguntas")
-    public ResponseEntity<?> salvarPerguntas(@RequestBody PerguntaController perguntas) {
-        logger.info("Recebendo respostas de preferências alimentares");
 
-        // Validação simples
-        if (perguntas.getGostaFrutas() == null || perguntas.getGostaVerduras() == null) {
-            logger.warn("Campos obrigatórios ausentes");
-            return ResponseEntity.badRequest().body(
-                    Map.of("mensagem", "Preencha todas as perguntas obrigatórias.")
+
+        @PostMapping("/perguntas")
+        public ResponseEntity<?> salvarPerguntas(@RequestBody Pergunta pergunta) {
+            logger.info("Recebendo respostas de preferências alimentares: {}", pergunta);
+
+            // Validação simples
+            if (pergunta.getGostaFrutas() == null || pergunta.getGostaVerduras() == null) {
+                return ResponseEntity.badRequest().body(
+                        Map.of("mensagem", "Preencha todas as perguntas obrigatórias.")
+                );
+            }
+
+            // SALVA NO BANCO
+            Pergunta perguntaSalva = perguntaRepository.save(pergunta);
+            logger.info("Perguntas salvas no banco com ID: {}", perguntaSalva.getId());
+
+            return ResponseEntity.ok(
+                    Map.of(
+                            "mensagem", "Respostas recebidas e salvas com sucesso!",
+                            "id", perguntaSalva.getId()
+                    )
             );
         }
 
-        // Aqui você pode armazenar no banco, associar ao usuário, enviar para IA, etc.
-        logger.info("Dados recebidos: {}", perguntas);
-
-        return ResponseEntity.ok(
-                Map.of("mensagem", "Respostas recebidas com sucesso! Obrigado por preencher.")
-        );
     }
-}
+
+
 
 

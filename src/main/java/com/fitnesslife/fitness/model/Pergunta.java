@@ -1,9 +1,12 @@
 package com.fitnesslife.fitness.model;
 
-
+import lombok.Data;
 import jakarta.persistence.*;
+
 @Entity
+@Data
 public class Pergunta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -14,17 +17,20 @@ public class Pergunta {
     private String verdurasNaoAgrada;
     private String alergias;
 
-    @Transient
-    private String mensagemIA;
-
-    public Object getGostaVerduras() {
-        return null;
-    }
+    @ManyToOne
+    @JoinColumn(name = "usuario_id") // cria a FK no banco
+    private Usuario usuario;
 
     public Object getGostaFrutas() {
-        return null;
+        return gostaFrutas;
     }
 
-    public void setMensagemIA(String s) {
+    public Object getGostaVerduras() {
+        return gostaVerduras;
+    }
+
+    public long getId() {
+        return  id;
     }
 }
+

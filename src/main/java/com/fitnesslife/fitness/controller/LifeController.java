@@ -27,6 +27,7 @@ public class LifeController {
         return "redirect:/login";
     }
 
+
     @GetMapping("/login")
     public String welcome() {
         logger.info("Acessando a página de login");
@@ -43,6 +44,11 @@ public class LifeController {
     public String menu() {
         logger.info("Acessando a página de menu");
         return "menu";
+    }
+
+    @GetMapping("/perguntas")
+    public String carregarPerguntas() {
+        return "perguntas"; // carrega perguntas.html
     }
 
     @GetMapping("/perfilnutricional")
