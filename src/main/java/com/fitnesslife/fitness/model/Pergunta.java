@@ -1,7 +1,7 @@
 package com.fitnesslife.fitness.model;
 
-import lombok.Data;
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Data
@@ -18,19 +18,9 @@ public class Pergunta {
     private String alergias;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id") // cria a FK no banco
-    private Usuario usuario;
+    @JoinColumn(name = "usuario_id", nullable = false)
+    private Usuario usuario;  // FK para o usuário
 
-    public Object getGostaFrutas() {
-        return gostaFrutas;
-    }
 
-    public Object getGostaVerduras() {
-        return gostaVerduras;
-    }
 
-    public long getId() {
-        return  id;
-    }
 }
-

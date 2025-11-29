@@ -104,7 +104,7 @@ public class ApiController {
     public String debugKeys() {
         String googleKey = System.getenv("GOOGLE_API_KEY");
         String geminiKey = System.getenv("GEMINI_API_KEY");
-        return "teste" +"GOOGLE_API_KEY=" + googleKey + " | GEMINI_API_KEY=" + geminiKey;
+        return "teste" + "GOOGLE_API_KEY=" + googleKey + " | GEMINI_API_KEY=" + geminiKey;
 
     }
 
@@ -116,43 +116,89 @@ public class ApiController {
         public String getEmail() {
             return email;
         }
+
         public void setEmail(String email) {
             this.email = email;
         }
+
         public String getSenha() {
             return senha;
         }
+
         public void setSenha(String senha) {
             this.senha = senha;
         }
     }
 
 
+    @PostMapping("/perguntas")
+    public ResponseEntity<?> salvarPerguntas(@RequestBody Pergunta pergunta) {
+        logger.info("Recebendo respostas de preferências alimentares: {}", pergunta);
 
-        @PostMapping("/perguntas")
-        public ResponseEntity<?> salvarPerguntas(@RequestBody Pergunta pergunta) {
-            logger.info("Recebendo respostas de preferências alimentares: {}", pergunta);
-
-            // Validação simples
-            if (pergunta.getGostaFrutas() == null || pergunta.getGostaVerduras() == null) {
-                return ResponseEntity.badRequest().body(
-                        Map.of("mensagem", "Preencha todas as perguntas obrigatórias.")
-                );
-            }
-
-            // SALVA NO BANCO
-            Pergunta perguntaSalva = perguntaRepository.save(pergunta);
-            logger.info("Perguntas salvas no banco com ID: {}", perguntaSalva.getId());
-
-            return ResponseEntity.ok(
-                    Map.of(
-                            "mensagem", "Respostas recebidas e salvas com sucesso!",
-                            "id", perguntaSalva.getId()
-                    )
+        // 1 — Validar se usuário foi enviado no JSON
+        if (pergunta.getUsuario() == null || pergunta.getUsuario().getId() == null) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("mensagem", "É necessário enviar o ID do usuário dentro do campo 'usuario'.")
             );
         }
 
+        Long usuarioId = pergunta.getUsuario().getId();
+
+        // 2 — Verificar se o usuário existe
+        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
+        if (usuario == null) {
+            return ResponseEntity.badRequest().body("Usuário não encontrado.");
+        }
+
+        // 3 — Validação dos campos obrigatórios
+        if (pergunta.getGostaFrutas() == null || pergunta.getGostaVerduras() == null) {
+            return ResponseEntity.badRequest().body(
+                    Map.of("mensagem", "Preencha todas as perguntas obrigatórias.")
+            );
+        }
+
+        // 4 — Verificar se já existe registro para esse usuário
+        Optional<Pergunta> perguntaExistente = perguntaRepository.findByUsuarioId(usuarioId);
+
+        Pergunta perguntaSalvar;
+
+        if (perguntaExistente.isPresent()) {
+            // UPDATE
+            Pergunta existente = perguntaExistente.get();
+
+            existente.setGostaFrutas(pergunta.getGostaFrutas());
+            existente.setFrutasNaoAgrada(pergunta.getFrutasNaoAgrada());
+            existente.setGostaVerduras(pergunta.getGostaVerduras());
+            existente.setVerdurasNaoAgrada(pergunta.getVerdurasNaoAgrada());
+            existente.setAlergias(pergunta.getAlergias());
+
+            perguntaSalvar = existente;
+
+        } else {
+            // NOVO REGISTRO
+            pergunta.setUsuario(usuario);
+            perguntaSalvar = pergunta;
+        }
+
+        // 5 — Salvar
+        perguntaRepository.save(perguntaSalvar);
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "mensagem",
+                        perguntaExistente.isPresent()
+                                ? "Registro atualizado com sucesso."
+                                : "Registro criado com sucesso.",
+                        "id", perguntaSalvar.getId()
+                )
+        );
     }
+}
+
+
+
+
+
 
 
 
