@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -132,66 +133,90 @@ public class ApiController {
 
 
     @PostMapping("/perguntas")
-    public ResponseEntity<?> salvarPerguntas(@RequestBody Pergunta pergunta) {
-        logger.info("Recebendo respostas de preferências alimentares: {}", pergunta);
+    public ResponseEntity<?> salvarPerguntas(@RequestBody Map<String, String> respostas,
+                                             Authentication authentication) {  // ← INJETAR AQUI
 
-        // 1 — Validar se usuário foi enviado no JSON
-        if (pergunta.getUsuario() == null || pergunta.getUsuario().getId() == null) {
-            return ResponseEntity.badRequest().body(
-                    Map.of("mensagem", "É necessário enviar o ID do usuário dentro do campo 'usuario'.")
-            );
+        logger.info("Salvando preferências alimentares para usuário autenticado");
+
+        // 1 — Pega o email do usuário logado (vem do SecurityContext)
+        String emailLogado = authentication.getName(); // ← email do usuário logado
+        Usuario usuario = usuarioRepository.findByEmail(emailLogado)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Long usuarioId = usuario.getId();
+
+        // 2 — Pega os dados do corpo da requisição
+        String gostaFrutas = respostas.get("gostaFrutas");
+        String frutasNaoAgrada = respostas.getOrDefault("frutasNaoAgrada", "");
+        String gostaVerduras = respostas.get("gostaVerduras");
+        String verdurasNaoAgrada = respostas.getOrDefault("verdurasNaoAgrada", "");
+        String alergias = respostas.getOrDefault("alergias", "");
+
+        // Validação básica
+        if (gostaFrutas == null || gostaVerduras == null) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("mensagem", "Responda todas as perguntas obrigatórias"));
         }
 
-        Long usuarioId = pergunta.getUsuario().getId();
+        // 3 — Busca se já existe preferência desse usuário
+        Optional<Pergunta> existenteOpt = perguntaRepository.findByUsuarioId(usuarioId);
 
-        // 2 — Verificar se o usuário existe
-        Usuario usuario = usuarioRepository.findById(usuarioId).orElse(null);
-        if (usuario == null) {
-            return ResponseEntity.badRequest().body("Usuário não encontrado.");
-        }
+        Pergunta perguntaSalvada;
 
-        // 3 — Validação dos campos obrigatórios
-        if (pergunta.getGostaFrutas() == null || pergunta.getGostaVerduras() == null) {
-            return ResponseEntity.badRequest().body(
-                    Map.of("mensagem", "Preencha todas as perguntas obrigatórias.")
-            );
-        }
-
-        // 4 — Verificar se já existe registro para esse usuário
-        Optional<Pergunta> perguntaExistente = perguntaRepository.findByUsuarioId(usuarioId);
-
-        Pergunta perguntaSalvar;
-
-        if (perguntaExistente.isPresent()) {
-            // UPDATE
-            Pergunta existente = perguntaExistente.get();
-
-            existente.setGostaFrutas(pergunta.getGostaFrutas());
-            existente.setFrutasNaoAgrada(pergunta.getFrutasNaoAgrada());
-            existente.setGostaVerduras(pergunta.getGostaVerduras());
-            existente.setVerdurasNaoAgrada(pergunta.getVerdurasNaoAgrada());
-            existente.setAlergias(pergunta.getAlergias());
-
-            perguntaSalvar = existente;
-
+        if (existenteOpt.isPresent()) {
+            // Atualiza
+            Pergunta existente = existenteOpt.get();
+            existente.setGostaFrutas(gostaFrutas);
+            existente.setFrutasNaoAgrada(frutasNaoAgrada);
+            existente.setGostaVerduras(gostaVerduras);
+            existente.setVerdurasNaoAgrada(verdurasNaoAgrada);
+            existente.setAlergias(alergias);
+            perguntaSalvada = perguntaRepository.save(existente);
         } else {
-            // NOVO REGISTRO
-            pergunta.setUsuario(usuario);
-            perguntaSalvar = pergunta;
+            // Cria novo
+            Pergunta nova = new Pergunta();
+            nova.setUsuario(usuario);
+            nova.setGostaFrutas(gostaFrutas);
+            nova.setFrutasNaoAgrada(frutasNaoAgrada);
+            nova.setGostaVerduras(gostaVerduras);
+            nova.setVerdurasNaoAgrada(verdurasNaoAgrada);
+            nova.setAlergias(alergias);
+            perguntaSalvada = perguntaRepository.save(nova);
         }
 
-        // 5 — Salvar
-        perguntaRepository.save(perguntaSalvar);
+        return ResponseEntity.ok(Map.of(
+                "mensagem", "Preferências salvas com sucesso!",
+                "atualizado", true
+        ));
+    }
 
-        return ResponseEntity.ok(
-                Map.of(
-                        "mensagem",
-                        perguntaExistente.isPresent()
-                                ? "Registro atualizado com sucesso."
-                                : "Registro criado com sucesso.",
-                        "id", perguntaSalvar.getId()
-                )
-        );
+    @GetMapping("/perguntas/ultimas")
+    public ResponseEntity<?> buscarPreferenciasUsuarioLogado(Authentication authentication) {
+        String email = authentication.getName();
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+
+        Optional<Pergunta> perguntaOpt = perguntaRepository.findByUsuarioId(usuario.getId());
+
+        if (perguntaOpt.isPresent()) {
+            Pergunta p = perguntaOpt.get();
+            return ResponseEntity.ok(Map.of(
+                    "gostaFrutas", p.getGostaFrutas(),
+                    "frutasNaoAgrada", p.getFrutasNaoAgrada() != null ? p.getFrutasNaoAgrada() : "",
+                    "gostaVerduras", p.getGostaVerduras(),
+                    "verdurasNaoAgrada", p.getVerdurasNaoAgrada() != null ? p.getVerdurasNaoAgrada() : "",
+                    "alergias", p.getAlergias() != null ? p.getAlergias() : ""
+            ));
+        } else {
+            // Retorna valores padrão se ainda não respondeu
+            return ResponseEntity.ok(Map.of(
+                    "gostaFrutas", "Sim",
+                    "frutasNaoAgrada", "",
+                    "gostaVerduras", "Sim",
+                    "verdurasNaoAgrada", "",
+                    "alergias", ""
+            ));
+        }
     }
 }
 

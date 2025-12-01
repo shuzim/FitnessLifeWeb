@@ -3,8 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <title>Receitas Saudáveis Personalizadas</title>
-
-    <!-- Bootstrap e Ícones -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
@@ -17,137 +15,261 @@
             margin: 0;
             padding: 20px;
         }
-
-        /* Apenas o h1 ganha espaço extra para não ser coberto pela navbar */
-        h1 {
-            color: #2b6cb0;
-            margin-top: 90px; /* Ajusta a distância da navbar */
-        }
-
+        h1 { color: #2b6cb0; margin-top: 100px; }
         #resposta {
             background-color: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 30px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             white-space: pre-wrap;
+            line-height: 1.7;
         }
-
-        button {
+        .btn-custom {
             background-color: #2b6cb0;
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 8px;
-            cursor: pointer;
-            margin-top: 15px;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin: 10px 8px;
         }
-
-        button:hover {
-            background-color: #2c5282;
+        .btn-custom:hover { background-color: #2c5282; }
+        .btn-editar {
+            background-color: #6c757d;
         }
-
+        .btn-editar:hover { background-color: #5a6268; }
         .navbar {
             background: linear-gradient(90deg, #007bff, #00c4ff);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-
-        .navbar-brand, .nav-link {
-            color: white !important;
-            font-weight: 600;
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .navbar-brand:hover, .nav-link:hover {
-            color: #f8f9fa !important;
-        }
+        .navbar-brand, .nav-link { color: white !important; font-weight: 600; }
+        .modal-header { background-color: #2b6cb0; color: white; }
     </style>
 </head>
-
 <body>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
         <a class="navbar-brand" href="/menu">FitnessLife</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="/menu"><i class="bi bi-house-door me-1"></i>Menu</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/perfilnutricional"><i class="bi bi-person-circle me-1"></i>Perfil</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="/menu"><i class="bi bi-box-arrow-right me-1"></i>Sair</a>
-                </li>
+                <li class="nav-item"><a class="nav-link" href="/menu">Menu</a></li>
+                <li class="nav-item"><a class="nav-link" href="/perfilnutricional">Perfil</a></li>
+                <li class="nav-item"><a class="nav-link" href="/menu">Sair</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<!-- Conteúdo -->
-<h1>Receitas Saudáveis Personalizadas 🍎</h1>
-<p>Ao clicar abaixo, será gerada uma recomendação personalizada com base em seus dados cadastrados.</p>
+<div class="container text-center mt-5">
+    <h1>Receitas Saudáveis Personalizadas</h1>
+    <p class="lead mb-5">
+        Gere seu plano alimentar personalizado com inteligência artificial!<br>
+        <small class="text-muted">Suas preferências alimentares serão usadas para receitas mais adequadas a você.</small>
+    </p>
 
-<button id="btnGerar">Gerar Receitas Personalizadas</button>
-<div id="resposta"></div>
+    <!-- Botões principais -->
+    <div class="mb-4">
+        <button id="btnGerar" class="btn btn-lg btn-custom">
+            Gerar Receitas com IA
+        </button>
 
+        <button id="btnEditarPrefs" class="btn btn-lg btn-custom btn-editar">
+            Editar Preferências
+        </button>
+    </div>
+
+    <div id="resposta"></div>
+</div>
+
+<!-- Modal de Preferências -->
+<div class="modal fade" id="modalPreferencias" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Suas Preferências Alimentares</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="perguntasForm">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Você gosta de frutas?</label>
+                            <select class="form-select" name="gostaFrutas" required>
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Frutas que você NÃO gosta</label>
+                            <input type="text" class="form-control" name="frutasNaoAgrada" placeholder="Ex: mamão, abacaxi...">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Você gosta de verduras/legumes?</label>
+                            <select class="form-select" name="gostaVerduras" required>
+                                <option value="">Selecione...</option>
+                                <option value="Sim">Sim</option>
+                                <option value="Não">Não</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Verduras que você NÃO gosta</label>
+                            <input type="text" class="form-control" name="verdurasNaoAgrada" placeholder="Ex: brócolis, couve...">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Alergias ou intolerâncias?</label>
+                            <input type="text" class="form-control" name="alergias" placeholder="Ex: lactose, glúten... (opcional)">
+                        </div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button type="submit" class="btn btn-success px-5">Salvar Preferências</button>
+                    </div>
+                </form>
+                <div id="respostaModal" class="mt-3 text-center" style="display:none;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    async function buscarUsuario() {
-        const resp = await fetch("/api/usuarios");
-        if (!resp.ok) {
-            throw new Error("Erro ao buscar dados do usuário");
+    const modal = new bootstrap.Modal(document.getElementById('modalPreferencias'));
+    const btnGerar = document.getElementById('btnGerar');
+    const btnEditar = document.getElementById('btnEditarPrefs');
+    let temPreferencias = false;
+
+    // Verifica se o usuário já tem preferências salvas
+    async function verificarPreferencias() {
+        try {
+            const res = await fetch("/api/perguntas/ultimas");
+            if (res.ok) {
+                const data = await res.json();
+                if (data && data.gostaFrutas) {
+                    temPreferencias = true;
+                    btnGerar.disabled = false;
+                    btnGerar.innerHTML = "Gerar Receitas com IA";
+                }
+            }
+        } catch (e) {
+            console.log("Erro ao carregar preferências");
         }
-        const data = await resp.json();
-        return Array.isArray(data) ? data[0] : data;
     }
 
-    async function gerarReceita() {
-        const respostaDiv = document.getElementById("resposta");
-        respostaDiv.innerHTML = "🔄 Gerando sua recomendação personalizada...";
+    // Ao carregar a página
+    verificarPreferencias();
+
+    // Abrir modal ao clicar no botão editar
+    btnEditar.addEventListener('click', () => modal.show());
+
+    // Enviar preferências
+    document.getElementById("perguntasForm").addEventListener("submit", async function(e) {
+        e.preventDefault();
+
+        const dados = {
+            gostaFrutas: this.gostaFrutas.value,
+            frutasNaoAgrada: this.frutasNaoAgrada.value.trim(),
+            gostaVerduras: this.gostaVerduras.value,
+            verdurasNaoAgrada: this.verdurasNaoAgrada.value.trim(),
+            alergias: this.alergias.value.trim()
+        };
+
+        if (dados.gostaFrutas === "Não" && !dados.frutasNaoAgrada) {
+            alert("Informe quais frutas você não gosta");
+            return;
+        }
+        if (dados.gostaVerduras === "Não" && !dados.verdurasNaoAgrada) {
+            alert("Informe quais verduras você não gosta");
+            return;
+        }
+
+        const alerta = document.getElementById("respostaModal");
+        alerta.style.display = "block";
+        alerta.innerHTML = `<div class="alert alert-info">Salvando preferências...</div>`;
 
         try {
-            const usuario = await buscarUsuario();
-
-            const pergunta = `
-Crie um plano alimentar saudável personalizado baseado nas seguintes informações:
-- Idade: ${usuario.idade}
-- Sexo: ${usuario.sexo}
-- Altura: ${usuario.altura}m
-- Peso: ${usuario.peso}kg
-
-Monte 5 receitas diárias (café da manhã, almoço, lanche, jantar e ceia),
-diga se o peso e altura estão adequados e recomende melhorias saudáveis.
-`;
-
-            const resp = await fetch("/api/gemini/respostas", {
+            const res = await fetch("/api/perguntas", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ pergunta })
+                body: JSON.stringify(dados)
             });
 
-            if (!resp.ok) {
-                throw new Error("Erro ao gerar resposta da IA");
-            }
+            if (!res.ok) throw new Error("Erro ao salvar");
 
-            const respostaTexto = await resp.text();
-            respostaDiv.innerHTML = `<h3>🧠 Recomendações Personalizadas:</h3><p>${respostaTexto}</p>`;
+            alerta.innerHTML = `<div class="alert alert-success">Preferências salvas com sucesso!</div>`;
+            temPreferencias = true;
+            btnGerar.disabled = false;
+            btnGerar.innerHTML = "Gerar Receitas com IA";
+
+            setTimeout(() => modal.hide(), 1500);
+        } catch (err) {
+            alerta.innerHTML = `<div class="alert alert-danger">Erro ao salvar. Tente novamente.</div>`;
+        }
+    });
+
+    // Gerar receita com IA
+    async function gerarReceita() {
+        if (!temPreferencias) {
+            modal.show();
+            return;
+        }
+
+        const div = document.getElementById("resposta");
+        div.innerHTML = `<div class="text-center"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-3">Gerando suas receitas personalizadas...</p></div>`;
+
+        try {
+            const [usuarioRes, prefsRes] = await Promise.all([
+                fetch("/api/usuarios"),
+                fetch("/api/perguntas/ultimas")
+            ]);
+
+            const usuario = await usuarioRes.json();
+            const usuarioData = Array.isArray(usuario) ? usuario[0] : usuario;
+            const prefs = await prefsRes.json();
+
+            const prompt = `
+Crie um plano alimentar completo e saudável para MIM com 5 refeições por dia:
+
+Meus dados:
+- Idade: ${usuarioData.idade} anos
+- Sexo: ${usuarioData.sexo}
+- Altura: ${usuarioData.altura}m
+- Peso: ${usuarioData.peso}kg
+
+Preferências e restrições:
+- Gosto de frutas: ${prefs.gostaFrutas || 'Sim'}
+- Não como estas frutas: ${prefs.frutasNaoAgrada || 'nenhuma'}
+- Gosto de verduras: ${prefs.gostaVerduras || 'Sim'}
+- Não como estas verduras: ${prefs.verdurasNaoAgrada || 'nenhuma'}
+- Alergias: ${prefs.alergias || 'nenhuma'}
+
+IMPORTANTE: Nunca inclua alimentos que eu não gosto ou que me façam mal.
+Avalie meu IMC, diga se estou no peso ideal e dê dicas práticas.
+Use ingredientes comuns no Brasil e receitas fáceis de fazer.
+            `;
+
+            const iaRes = await fetch("/api/gemini/respostas", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ pergunta: prompt })
+            });
+
+            const texto = await iaRes.text();
+            div.innerHTML = `
+                <h3 class="text-success mb-4">Suas Receitas Personalizadas Estão Prontas!</h3>
+                <div class="text-start p-4 bg-light rounded">${texto.replace(/\n/g, '<br>')}</div>
+            `;
 
         } catch (err) {
-            respostaDiv.innerHTML = `<span style="color:red;">❌ ${err.message}</span>`;
-            console.error(err);
+            div.innerHTML = `<div class="alert alert-danger">Erro: ${err.message}</div>`;
         }
     }
 
-    document.getElementById("btnGerar").addEventListener("click", gerarReceita);
+    btnGerar.addEventListener("click", gerarReceita);
 </script>
-
-<!-- Scripts Bootstrap -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

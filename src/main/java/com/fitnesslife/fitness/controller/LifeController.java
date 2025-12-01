@@ -46,10 +46,7 @@ public class LifeController {
         return "menu";
     }
 
-    @GetMapping("/perguntas")
-    public String carregarPerguntas() {
-        return "perguntas"; // carrega perguntas.html
-    }
+
 
     @GetMapping("/perfilnutricional")
     public String perfilNutricional(Model model) {

@@ -1,11 +1,15 @@
 package com.fitnesslife.fitness.controller;
 
+import ch.qos.logback.core.model.Model;
 import com.fitnesslife.fitness.model.RelogioDataDto;
 import com.fitnesslife.fitness.model.RelogioData;
+import com.fitnesslife.fitness.model.Usuario;
 import com.fitnesslife.fitness.repository.RelogioDataRepository;
+import com.fitnesslife.fitness.repository.UsuarioRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.OffsetDateTime;
 import java.util.Optional;
 
@@ -58,4 +62,5 @@ public class RelogioController {
 
         return ResponseEntity.ok(" Usuário registrado no sistema de relógio.");
     }
+
 }
