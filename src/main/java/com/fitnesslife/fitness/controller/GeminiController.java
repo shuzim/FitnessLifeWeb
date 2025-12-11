@@ -1,31 +1,42 @@
-
 package com.fitnesslife.fitness.controller;
 
-import com.google.api.client.util.Value;
 import com.google.genai.Client;
 import com.google.genai.types.GenerateContentResponse;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping("api/gemini")
+@RequestMapping("/api/gemini")
+@CrossOrigin(origins = "*")
 public class GeminiController {
-    @PostMapping("respostas")
-    public String GeminiRespose(@RequestBody Map<String, String> body) {
+
+    // teste api
+    private static final String API_KEY = "AIzaSyCSOCMD-wiWnBCbg1glwD2wNlyDq4ozBro";
+
+    @PostMapping("/respostas")
+    public String geminiResponse(@RequestBody Map<String, String> body) {
         String pergunta = body.get("pergunta");
 
-        System.setProperty("GEMINI_API_KEY", "AIzaSyCwNqJ4Ns9kpoYJeC4a-A197ukogAWGjHc");
+        if (pergunta == null || pergunta.trim().isEmpty()) {
+            return "Faça uma pergunta!";
+        }
 
-        Client client = new Client();
+        try {
+            // AQUI ESTÁ O QUE VOCÊ QUERIA: client criado com a chave dentro
+            Client client = Client.builder()
+                    .apiKey(API_KEY)
+                    .build();
 
-        GenerateContentResponse response =
-                client.models.generateContent("gemini-2.0-flash", pergunta, null);
+            // MANTIVE EXATAMENTE COMO VOCÊ PEDIU
+            GenerateContentResponse response =
+                    client.models.generateContent("gemini-2.0-flash", pergunta, null);
 
-        return response.text();
+            return response.text();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Erro: " + e.getMessage();
+        }
     }
-
 }
